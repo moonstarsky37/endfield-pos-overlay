@@ -2,7 +2,7 @@
 // @name         Endfield Position Relay
 // @name:zh-TW   Endfield 座標中繼
 // @namespace    endfield-pos-overlay
-// @version      0.2.1
+// @version      0.2.2
 // @description  Relays your live position from the official Endfield web map to the local overlay app (127.0.0.1). Read-only.
 // @description:zh-TW 把官方 Endfield 網頁地圖收到的角色位置轉送到本機浮窗程式（127.0.0.1）。只讀不寫。
 // @license      MIT
@@ -52,7 +52,7 @@
   sequence can then swallow the closing quote of a string and the file fails to parse before the friendly
   message near the top can show. All non-ASCII text in code is therefore written as \uXXXX escapes.
   Readable copies of the Chinese UI strings (TEXT, zh branch):
-    waiting      座標中繼：等待（按地圖的「同步位置」）
+    waiting      座標中繼：等待（把地圖的「位置同步」切到 ON）
     sending      座標中繼：送出中
     unreachable  座標中繼：連不到 127.0.0.1:<port>（浮窗沒開？）
     nohook       座標中繼：掛鉤失敗（腳本設定的 @sandbox 請用 raw）
@@ -75,7 +75,7 @@
     WScript.Quit(0);
   }
 
-  var VERSION = '0.2.1';
+  var VERSION = '0.2.2';
   var DEFAULT_PORT = 27600;
   var WS_HOST = 'ws.skport.com';
   var EVT = 'endfield-pos-relay:frame';
@@ -99,7 +99,7 @@
 
   var ZH = /^zh/i.test((navigator.language || '') + '');
   var TEXT = ZH ? {
-    waiting: '\u5ea7\u6a19\u4e2d\u7e7c\uff1a\u7b49\u5f85\uff08\u6309\u5730\u5716\u7684\u300c\u540c\u6b65\u4f4d\u7f6e\u300d\uff09',
+    waiting: '\u5ea7\u6a19\u4e2d\u7e7c\uff1a\u7b49\u5f85\uff08\u628a\u5730\u5716\u7684\u300c\u4f4d\u7f6e\u540c\u6b65\u300d\u5207\u5230 ON\uff09',
     sending: '\u5ea7\u6a19\u4e2d\u7e7c\uff1a\u9001\u51fa\u4e2d',
     unreachable: '\u5ea7\u6a19\u4e2d\u7e7c\uff1a\u9023\u4e0d\u5230 127.0.0.1:' + PORT + '\uff08\u6d6e\u7a97\u6c92\u958b\uff1f\uff09',
     nohook: '\u5ea7\u6a19\u4e2d\u7e7c\uff1a\u639b\u9264\u5931\u6557\uff08\u8173\u672c\u8a2d\u5b9a\u7684 @sandbox \u8acb\u7528 raw\uff09',
@@ -107,7 +107,7 @@
     promptPort: '\u6d6e\u7a97\u63a5\u6536\u57e0\uff08\u9810\u8a2d ' + DEFAULT_PORT + '\uff09\uff1a',
     reload: '\u5df2\u5132\u5b58\uff0c\u91cd\u65b0\u6574\u7406\u9801\u9762\u5f8c\u751f\u6548\u3002'
   } : {
-    waiting: 'Position relay: waiting (press "Sync position" on the map)',
+    waiting: 'Position relay: waiting (switch "Sync position" ON on the map)',
     sending: 'Position relay: sending',
     unreachable: 'Position relay: cannot reach 127.0.0.1:' + PORT + ' (is the overlay running?)',
     nohook: 'Position relay: hook failed (keep the script\'s @sandbox at raw)',

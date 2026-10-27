@@ -26,19 +26,30 @@ always-on-top window
 
 ## Install
 
+Three steps: Tampermonkey → the userscript → the overlay app. Each step ends with a **Check** line; doing it saves most of the troubleshooting later.
+
 ### 1. A userscript manager
 
 | Browser | Extension | Extra step |
 |---|---|---|
-| Chrome | [Tampermonkey](https://chromewebstore.google.com/detail/dhdgffkkebhmkfjojejmpbldmpobfkfo) | Extensions → Tampermonkey → Details → turn on **Allow User Scripts** (older Chrome: turn on *Developer mode*) |
-| Edge | [Tampermonkey](https://microsoftedge.microsoft.com/addons/detail/iikmkjmpaadaobahmlepeloendndfphd) | Same: Extensions → Details → *Allow user scripts*, or *Developer mode* |
+| Chrome | [Tampermonkey](https://chromewebstore.google.com/detail/dhdgffkkebhmkfjojejmpbldmpobfkfo) | Paste `chrome://extensions/?id=dhdgffkkebhmkfjojejmpbldmpobfkfo` into the address bar (that is Tampermonkey's *Details* page) → scroll to **Allow User Scripts** and turn it on. Older Chrome has no such switch: open `chrome://extensions` and turn on *Developer mode* at the top right instead |
+| Edge | [Tampermonkey](https://microsoftedge.microsoft.com/addons/detail/iikmkjmpaadaobahmlepeloendndfphd) | Same: paste `edge://extensions/?id=iikmkjmpaadaobahmlepeloendndfphd` → turn on *Allow user scripts*, or *Developer mode* |
 | Firefox | [Tampermonkey](https://addons.mozilla.org/firefox/addon/tampermonkey/) or [Violentmonkey](https://addons.mozilla.org/firefox/addon/violentmonkey/) | none |
+
+Cannot find that page: right-click the Tampermonkey icon at the top right of the browser → *Manage extension*; it is the same page. Tampermonkey's FAQ has a screenshot of every step: [Permission to execute userscripts](https://www.tampermonkey.net/faq.php?q=Q209).
+
+**Check**: on Tampermonkey's *Details* page, *Allow User Scripts* is on. If it is off, the script installs fine but never runs, and nothing reports an error. The *Service worker* / *Inspect views* links on that page are for developers and have nothing to do with this tool.
 
 ### 2. The userscript
 
-Click **[install endfield-pos-relay.user.js](https://raw.githubusercontent.com/moonstarsky37/endfield-pos-overlay/main/userscript/endfield-pos-relay.user.js)**; the extension shows an install page → *Install*. Updates are picked up automatically.
+In the browser, click **[install endfield-pos-relay.user.js](https://raw.githubusercontent.com/moonstarsky37/endfield-pos-overlay/main/userscript/endfield-pos-relay.user.js)**; Tampermonkey shows an install page → *Install*. Updates are picked up automatically.
 
-Do **not** download the `.user.js` and double-click it: it is not a program, and Windows will show a "Windows Script Host" error. Open the link in the browser so Tampermonkey installs it.
+- A page titled **Reinstall** means it is already installed. Compare *Installed version* with the link's version: older → *Reinstall*, same → *Cancel*.
+- If the link only downloads a file and no install page appears, step 1 is incomplete (Tampermonkey missing, or *Allow User Scripts* off).
+- Do **not** download the `.user.js` and double-click it: it is not a program, and Windows shows a "Windows Script Host" error dialog.
+- Offline install: drag the `.user.js` file into the browser window, or paste its contents into Tampermonkey's *Create a new script*.
+
+**Check**: click the Tampermonkey icon at the top right of the browser; the list contains "Endfield Position Relay" and its switch is on.
 
 ### 3. The overlay app
 
@@ -49,11 +60,20 @@ From [Releases](../../releases):
 
 Or run from source (standard library only, nothing to install): `python run_overlay.py`, or double-click `start-overlay.cmd` / `start-overlay.command`.
 
+**Check**: a small black window appears saying "Waiting for the map page…".
+
 ## Use
 
-1. Start the overlay. It shows "Waiting for the map page…".
-2. Open the [official map](https://game.skport.com/map/endfield), log in, press **Sync position**. A small badge at the bottom-right of the page says "Position relay: sending".
-3. The overlay updates about once a second.
+1. Start the overlay.
+2. Open the [official map](https://game.skport.com/map/endfield), log in, switch **Sync position** to ON.
+   Locale URLs (`/zh-tw/map/…`, `/en/map/…`) work too.
+3. Look at three places; when all three match, it works:
+
+| Where | What success looks like |
+|---|---|
+| Bottom-right of the map page | a small line "Position relay: sending" |
+| Tampermonkey icon | shows the number 1 (one script running on this page) |
+| Overlay | updates about once a second |
 
 ![In-game use: drag the overlay anywhere on screen](docs/images/demo-ingame.jpg)
 
@@ -73,22 +93,29 @@ Options: `--port 27600` (if you change it, also change it in the userscript menu
 
 ## Troubleshooting
 
+Three places tell you which part is stuck:
+
+| Where | Normal | Otherwise |
+|---|---|---|
+| Small line at the bottom-right of the map page | "Position relay: sending" | **No line at all**: the script is not running on this page → redo the *Check* of install steps 1 and 2; the script must be 0.2.1 or newer (older versions ignored locale URLs; click the install link again to update). **"cannot reach 127.0.0.1:27600"**: the overlay is not running. **"waiting"**: *Sync position* is not ON |
+| Open `http://127.0.0.1:27600/health` in the browser | something like `{"ok": true, "last_update_age_s": 0.3, "frames": 123}` with `frames` above 0 | **Does not open**: the overlay is not running. **`frames` is 0**: the script never sent anything; same as "no line at all" above |
+| Overlay | numbers update every second | stuck on "Waiting for the map page…": see the two rows above |
+
+If you know your way around F12: on the map page press F12 → Network → WS → click `map` → Messages. Messages with `"type":1012` arriving every second mean the site is sending positions and the problem is in the script or the overlay; none means *Sync position* did not take effect, toggle it off and on.
+
 | Symptom | Fix |
 |---|---|
-| Double-clicking `.user.js` shows a "Windows Script Host" error (800A0404) | The file is not meant to be run. Install Tampermonkey (steps 1–2), then open the install link in the browser (step 3) |
+| Double-clicking `.user.js` shows a "Windows Script Host" error | The file is not meant to be run. Install Tampermonkey (step 1), then open the install link in the browser (step 2) |
 | "Cannot listen on 127.0.0.1:27600" at start | Another overlay is running or the port is taken. Close it or use `--port 27601` (and set the same port in the userscript menu) |
-| Badge: "cannot reach 127.0.0.1:27600" | The overlay app is not running |
-| Badge: "hook failed" | The script's `@sandbox` was changed to `DOM`; keep `@sandbox raw` and reload the page |
-| No badge, overlay keeps waiting | Chrome / Edge: *Allow User Scripts* is off, or the script is disabled. Fix and reload the map |
-| Overlay keeps "Waiting for the map page…" | Log in and press *Sync position*; reload and press again if needed |
+| Line says "hook failed" | The script's `@sandbox` was changed to `DOM`; keep `@sandbox raw` and reload the page |
 | Overlay hidden in game | Use **borderless window** mode; exclusive fullscreen covers every topmost window. macOS fullscreen apps live in their own Space, same effect |
 | Numbers grey | No data for 5 s: the tab was put to sleep or disconnected |
 
-The last word on the badge (`inject` / `page` / `sandbox`) tells how the script hooked in; include it, plus browser and extension versions, when reporting a problem.
+The last word on the line (`inject` / `page` / `sandbox`) tells how the script hooked in. When reporting a problem include that line, the `/health` output, and the browser and Tampermonkey versions.
 
 ## Limits
 
-- Data only flows while the map tab is open and *Sync position* is on.
+- Data only flows while the map tab is open and *Sync position* is ON.
 - One update per second is the official server's rate.
 - A redesign of the official site may break the script; please open an issue.
 - The macOS build has not been fully tested on real hardware.

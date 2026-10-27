@@ -11,7 +11,7 @@
 ## 運作方式
 
 ```
-官方地圖網頁（你的瀏覽器，已登入、按了「同步位置」）
+官方地圖網頁（你的瀏覽器，已登入、「位置同步」切到 ON）
    │  使用者腳本攔下頁面自己收到的位置訊息（約每秒一筆）
    ▼
 http://127.0.0.1:27600/pos   ← 浮窗程式在本機開的接收埠
@@ -28,21 +28,30 @@ http://127.0.0.1:27600/pos   ← 浮窗程式在本機開的接收埠
 
 ## 安裝
 
+三步：裝 Tampermonkey → 裝腳本 → 下載浮窗程式。每一步結尾有「確認」，做完看一下，可以省掉大半的排查。
+
 ### 1. 瀏覽器裝使用者腳本管理器
 
 | 瀏覽器 | 擴充套件 | 額外設定 |
 |---|---|---|
-| Chrome | [Tampermonkey](https://chromewebstore.google.com/detail/dhdgffkkebhmkfjojejmpbldmpobfkfo) | 擴充功能 → Tampermonkey → 詳細資料 → 打開「**允許使用者指令碼**」（舊版 Chrome 是打開右上角「開發人員模式」） |
-| Edge | [Tampermonkey](https://microsoftedge.microsoft.com/addons/detail/iikmkjmpaadaobahmlepeloendndfphd) | 同上：擴充功能 → 詳細資料 → 「允許使用者指令碼」；或打開「開發人員模式」 |
+| Chrome | [Tampermonkey](https://chromewebstore.google.com/detail/dhdgffkkebhmkfjojejmpbldmpobfkfo) | 把 `chrome://extensions/?id=dhdgffkkebhmkfjojejmpbldmpobfkfo` 貼到網址列（這就是 Tampermonkey 的「詳細資料」頁）→ 往下找「**允許使用者指令碼**」打開。舊版 Chrome 沒有這個開關：改到 `chrome://extensions` 右上角打開「開發人員模式」 |
+| Edge | [Tampermonkey](https://microsoftedge.microsoft.com/addons/detail/iikmkjmpaadaobahmlepeloendndfphd) | 同上：貼 `edge://extensions/?id=iikmkjmpaadaobahmlepeloendndfphd` → 打開「允許使用者指令碼」；或打開「開發人員模式」 |
 | Firefox | [Tampermonkey](https://addons.mozilla.org/firefox/addon/tampermonkey/) 或 [Violentmonkey](https://addons.mozilla.org/firefox/addon/violentmonkey/) | 無 |
+
+找不到那一頁的話：在瀏覽器右上角的 Tampermonkey 圖示上按右鍵 →「管理擴充功能」，就是同一頁。Tampermonkey 官方 FAQ 有每一步的截圖：[Permission to execute userscripts](https://www.tampermonkey.net/faq.php?q=Q209)。
+
+**確認**：Tampermonkey 詳細資料頁裡「允許使用者指令碼」是打開的。沒開的話，腳本裝得進去但永遠不會執行，而且不會有任何錯誤訊息。同一頁的「Service Worker」、「檢視畫面」連結是給開發者用的，跟本工具無關。
 
 ### 2. 安裝腳本
 
-點這個連結：**[安裝 endfield-pos-relay.user.js](https://raw.githubusercontent.com/moonstarsky37/endfield-pos-overlay/main/userscript/endfield-pos-relay.user.js)**，擴充套件會跳出安裝畫面 → 按「安裝」。之後腳本有新版會自動更新。
+在瀏覽器裡點這個連結：**[安裝 endfield-pos-relay.user.js](https://raw.githubusercontent.com/moonstarsky37/endfield-pos-overlay/main/userscript/endfield-pos-relay.user.js)**，Tampermonkey 會跳出安裝畫面 → 按「安裝」。之後腳本有新版會自動更新。
 
-**不要**把 `.user.js` 下載下來雙擊：它不是程式，雙擊會跳出「Windows Script Host」錯誤。一定要在瀏覽器裡點連結，由 Tampermonkey 安裝。
+- 出現「使用者腳本**重新安裝**」畫面，代表已經裝過。看「已安裝版本」：比連結上的版本舊就按「重新安裝」，一樣就按「取消」。
+- 點了連結只是下載一個檔案、沒有安裝畫面：第 1 步沒完成（Tampermonkey 沒裝，或「允許使用者指令碼」沒開）。
+- **不要**把 `.user.js` 下載下來雙擊：它不是程式，雙擊會跳出「Windows Script Host」的錯誤視窗。
+- 離線安裝：把 `.user.js` 檔拖進瀏覽器視窗，或在 Tampermonkey 的「新增腳本」貼上內容。
 
-（離線安裝：把 `.user.js` 檔拖進瀏覽器視窗，或在擴充套件的「新增腳本」貼上內容。）
+**確認**：點瀏覽器右上角的 Tampermonkey 圖示，清單裡有「Endfield 座標中繼」而且開關是開的。
 
 ### 3. 下載浮窗程式
 
@@ -61,12 +70,20 @@ python run_overlay.py
 
 Windows 可雙擊 `start-overlay.cmd`，macOS 可雙擊 `start-overlay.command`。
 
+**確認**：程式開起來有一個黑色小視窗，寫「等待網頁同步位置…」。
+
 ## 使用
 
-1. 開浮窗程式。視窗出現，顯示「等待網頁同步位置…」。
-2. 瀏覽器開 [官方地圖](https://game.skport.com/map/endfield)、登入、按「**同步位置**」。
-   頁面右下角會有一行小字「座標中繼：送出中」。
-3. 約一秒一筆，浮窗開始更新。
+1. 開浮窗程式。
+2. 瀏覽器開 [官方地圖](https://game.skport.com/map/endfield)、登入、把「**位置同步**」切到 ON。
+   網址帶語言（`/zh-tw/map/…`、`/en/map/…`）也可以。
+3. 看三個地方，都對了就是成功：
+
+| 看哪裡 | 成功的樣子 |
+|---|---|
+| 地圖頁右下角 | 一行小字「座標中繼：送出中」 |
+| Tampermonkey 圖示 | 圖示上有數字 1（這一頁有一個腳本在跑） |
+| 浮窗 | 約一秒更新一次 |
 
 ![邊玩邊看座標：浮窗可拖到畫面任何位置](docs/images/demo-ingame.jpg)
 
@@ -94,22 +111,29 @@ Windows 可雙擊 `start-overlay.cmd`，macOS 可雙擊 `start-overlay.command`�
 
 ## 疑難排解
 
+先看這三個地方，就知道卡在哪一段：
+
+| 看哪裡 | 正常 | 不正常代表 |
+|---|---|---|
+| 地圖頁右下角的小字 | 「座標中繼：送出中」 | **沒有小字**：腳本沒在這頁執行 → 回安裝第 1、2 步的「確認」；腳本要 0.2.1 以上（舊版不認帶語言的網址，再點一次安裝連結就會更新）。**「連不到 127.0.0.1:27600」**：浮窗沒開。**「等待」**：「位置同步」沒切到 ON |
+| 瀏覽器開 `http://127.0.0.1:27600/health` | 類似 `{"ok": true, "last_update_age_s": 0.3, "frames": 123}`，`frames` 大於 0 | **打不開**：浮窗沒開。**`frames` 是 0**：腳本從來沒送過東西，同上一列「沒有小字」 |
+| 浮窗 | 數字每秒更新 | 一直「等待網頁同步位置…」：看上面兩列 |
+
+會用 F12 的人可以再確認官網那一端：地圖頁按 F12 → 網路 → WS → 點 `map` → 訊息。有 `"type":1012` 的訊息一直進來，代表官網有送座標，問題在腳本或浮窗；沒有，代表「位置同步」沒生效，關掉再開一次。
+
 | 狀況 | 處理 |
 |---|---|
-| 雙擊 `.user.js` 跳出「Windows Script Host」錯誤（800A0404） | 這個檔案不能雙擊執行。先裝 Tampermonkey（安裝第 1、2 步），再在瀏覽器裡點安裝連結（第 3 步） |
+| 雙擊 `.user.js` 跳出「Windows Script Host」錯誤 | 這個檔案不能雙擊執行。先裝 Tampermonkey（安裝第 1 步），再在瀏覽器裡點安裝連結（第 2 步） |
 | 浮窗一啟動就跳「無法在 127.0.0.1:27600 開啟接收埠」 | 已經有一個浮窗在跑，或埠被別的程式占用。關掉舊的，或換埠（`--port 27601`，腳本選單也要改） |
-| 頁面徽章「連不到 127.0.0.1:27600」 | 浮窗沒開，先開浮窗 |
-| 頁面徽章「掛鉤失敗」 | 腳本的 `@sandbox` 被改成 `DOM` 了；在 Tampermonkey 編輯腳本，保持 `@sandbox raw`，然後重新整理頁面 |
-| 看不到徽章、浮窗一直等待 | Chrome / Edge 沒打開「允許使用者指令碼」；或腳本沒啟用。開好後重新整理地圖頁 |
-| 浮窗一直「等待網頁同步位置…」 | 地圖頁要先登入並按「同步位置」；沒反應就重新整理頁面再按一次 |
+| 頁面小字「掛鉤失敗」 | 腳本的 `@sandbox` 被改成 `DOM` 了；在 Tampermonkey 編輯腳本，保持 `@sandbox raw`，然後重新整理頁面 |
 | 浮窗在遊戲裡看不到 | 遊戲改成「**無邊框視窗**」模式；獨占全螢幕會蓋掉所有置頂視窗。macOS 的全螢幕 App 也一樣（在另一個桌面空間） |
 | 數字變灰 | 超過 5 秒沒新資料：瀏覽器分頁被休眠或斷線。把地圖分頁留在前景或關掉該分頁的省電休眠 |
 
-徽章最後的小字（`inject` / `page` / `sandbox`）是腳本用哪種方式掛上的，回報問題時請一併附上，並註明瀏覽器與擴充套件版本。
+小字最後的 `inject` / `page` / `sandbox` 是腳本用哪種方式掛上的。回報問題時請附上：那行小字、`/health` 顯示的內容、瀏覽器與 Tampermonkey 版本。
 
 ## 限制
 
-- 只有地圖分頁開著、而且已按「同步位置」時才有資料。
+- 只有地圖分頁開著、而且「位置同步」是 ON 時才有資料。
 - 一秒一筆是官方伺服器的推送頻率，浮窗不會更快。
 - 官方網站改版可能讓腳本失效；請開 issue。
 - macOS 版沒有在實機上完整驗證過，歡迎回報。
