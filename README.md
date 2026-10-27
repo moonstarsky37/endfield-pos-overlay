@@ -4,13 +4,7 @@
 
 把官方《明日方舟：終末地》網頁地圖（`https://game.skport.com/map/endfield`）同步到的角色座標，顯示在一個**永遠置頂、可拖曳、可縮放**的小視窗裡，邊玩邊看、點一下就複製。
 
-```
-武陵 · 祀的畫                    線上
-X        505.21
-Y        234.23
-Z       1100.93
-0.4 秒前                遊戲順序  ◢
-```
+![遊戲畫面右上角的座標浮窗](docs/images/demo-vista.jpg)
 
 > 非官方工具，與 GRYPHLINE / Hypergryph 無關。只讀：不改、不擋、不送出任何遊戲或網站資料；座標只送到你自己電腦上的 `127.0.0.1`。
 
@@ -71,6 +65,8 @@ Windows 可雙擊 `start-overlay.cmd`，macOS 可雙擊 `start-overlay.command`�
 2. 瀏覽器開 [官方地圖](https://game.skport.com/map/endfield)、登入、按「**同步位置**」。
    頁面右下角會有一行小字「座標中繼：送出中」。
 3. 約一秒一筆，浮窗開始更新。
+
+![邊玩邊看座標：浮窗可拖到畫面任何位置](docs/images/demo-ingame.jpg)
 
 | 操作 | 效果 |
 |---|---|

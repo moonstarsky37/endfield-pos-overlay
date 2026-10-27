@@ -4,13 +4,7 @@
 
 Shows your live character position from the official *Arknights: Endfield* web map (`https://game.skport.com/map/endfield`) in a small **always-on-top, draggable, resizable** window. Glance at it while playing; click to copy.
 
-```
-Wuling · map02_lv010             online
-X        505.21
-Y        234.23
-Z       1100.93
-0.4 s ago                game order  ◢
-```
+![The overlay in the top-right corner of the game](docs/images/demo-vista.jpg)
 
 > Unofficial tool, not affiliated with GRYPHLINE / Hypergryph. Read-only: it never modifies, blocks or sends any game or website data. Positions only go to `127.0.0.1` on your own computer.
 
@@ -58,6 +52,8 @@ Or run from source (standard library only, nothing to install): `python run_over
 1. Start the overlay. It shows "Waiting for the map page…".
 2. Open the [official map](https://game.skport.com/map/endfield), log in, press **Sync position**. A small badge at the bottom-right of the page says "Position relay: sending".
 3. The overlay updates about once a second.
+
+![In-game use: drag the overlay anywhere on screen](docs/images/demo-ingame.jpg)
 
 | Action | Effect |
 |---|---|
