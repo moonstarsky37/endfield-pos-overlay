@@ -38,6 +38,8 @@ always-on-top window
 
 Click **[install endfield-pos-relay.user.js](https://raw.githubusercontent.com/moonstarsky37/endfield-pos-overlay/main/userscript/endfield-pos-relay.user.js)**; the extension shows an install page → *Install*. Updates are picked up automatically.
 
+Do **not** download the `.user.js` and double-click it: it is not a program, and Windows will show a "Windows Script Host" error. Open the link in the browser so Tampermonkey installs it.
+
 ### 3. The overlay app
 
 From [Releases](../../releases):
@@ -73,6 +75,7 @@ Options: `--port 27600` (if you change it, also change it in the userscript menu
 
 | Symptom | Fix |
 |---|---|
+| Double-clicking `.user.js` shows a "Windows Script Host" error (800A0404) | The file is not meant to be run. Install Tampermonkey (steps 1–2), then open the install link in the browser (step 3) |
 | "Cannot listen on 127.0.0.1:27600" at start | Another overlay is running or the port is taken. Close it or use `--port 27601` (and set the same port in the userscript menu) |
 | Badge: "cannot reach 127.0.0.1:27600" | The overlay app is not running |
 | Badge: "hook failed" | The script's `@sandbox` was changed to `DOM`; keep `@sandbox raw` and reload the page |

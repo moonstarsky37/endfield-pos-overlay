@@ -40,6 +40,8 @@ http://127.0.0.1:27600/pos   ← 浮窗程式在本機開的接收埠
 
 點這個連結：**[安裝 endfield-pos-relay.user.js](https://raw.githubusercontent.com/moonstarsky37/endfield-pos-overlay/main/userscript/endfield-pos-relay.user.js)**，擴充套件會跳出安裝畫面 → 按「安裝」。之後腳本有新版會自動更新。
 
+**不要**把 `.user.js` 下載下來雙擊：它不是程式，雙擊會跳出「Windows Script Host」錯誤。一定要在瀏覽器裡點連結，由 Tampermonkey 安裝。
+
 （離線安裝：把 `.user.js` 檔拖進瀏覽器視窗，或在擴充套件的「新增腳本」貼上內容。）
 
 ### 3. 下載浮窗程式
@@ -94,6 +96,7 @@ Windows 可雙擊 `start-overlay.cmd`，macOS 可雙擊 `start-overlay.command`�
 
 | 狀況 | 處理 |
 |---|---|
+| 雙擊 `.user.js` 跳出「Windows Script Host」錯誤（800A0404） | 這個檔案不能雙擊執行。先裝 Tampermonkey（安裝第 1、2 步），再在瀏覽器裡點安裝連結（第 3 步） |
 | 浮窗一啟動就跳「無法在 127.0.0.1:27600 開啟接收埠」 | 已經有一個浮窗在跑，或埠被別的程式占用。關掉舊的，或換埠（`--port 27601`，腳本選單也要改） |
 | 頁面徽章「連不到 127.0.0.1:27600」 | 浮窗沒開，先開浮窗 |
 | 頁面徽章「掛鉤失敗」 | 腳本的 `@sandbox` 被改成 `DOM` 了；在 Tampermonkey 編輯腳本，保持 `@sandbox raw`，然後重新整理頁面 |
