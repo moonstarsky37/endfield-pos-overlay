@@ -1,0 +1,77 @@
+name: build
+
+on:
+  push:
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m unittest -v
+
+  windows:
+    needs: test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pyinstaller==6.11.1
+      - run: pyinstaller --noconfirm --onefile --windowed --name endfield-pos-overlay-windows run_overlay.py
+      - name: smoke test (starts, then quits)
+        shell: pwsh
+        run: |
+          $p = Start-Process dist\endfield-pos-overlay-windows.exe -ArgumentList '--exit-after','3','--port','27699','--state-file',"$env:RUNNER_TEMP\s.json" -PassThru
+          Start-Sleep 2
+          $r = Invoke-WebRequest http://127.0.0.1:27699/health -UseBasicParsing
+          if ($r.StatusCode -ne 200) { exit 1 }
+          $p.WaitForExit(15000)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: dist/endfield-pos-overlay-windows.exe
+
+  macos:
+    needs: test
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pyinstaller==6.11.1
+      - run: pyinstaller --noconfirm --windowed --name "Endfield Position Overlay" run_overlay.py
+      - run: cd dist && ditto -c -k --keepParent "Endfield Position Overlay.app" endfield-pos-overlay-macos.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos
+          path: dist/endfield-pos-overlay-macos.zip
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [windows, macos]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: out
+      - name: publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" --generate-notes \
+            out/windows/endfield-pos-overlay-windows.exe \
+            out/macos/endfield-pos-overlay-macos.zip \
+            userscript/endfield-pos-relay.user.js

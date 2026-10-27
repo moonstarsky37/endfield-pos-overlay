@@ -1,0 +1,12 @@
+CLAUDE.md
+.claude/
+state.json
+overlay_state.json
+__pycache__/
+*.pyc
+build/
+dist/
+*.spec.bak
+.venv/
+*.egg-info/
+uv.lock
