@@ -32,7 +32,8 @@ class ParseTests(unittest.TestCase):
         self.assertEqual(ordered_triple(pos, "blender"), (505.20776, 1100.9303, 234.22778))
 
     def test_format(self):
-        self.assertEqual(format_coords((505.20776, 1100.9303, 234.22778)), "505.21 1100.93 234.23")
+        self.assertEqual(format_coords((505.20776, 1100.9303, 234.22778)), "505.21, 1100.93, 234.23")
+        self.assertEqual(format_coords((-314.0, 323.0, 400.0)), "-314.00, 323.00, 400.00")
         self.assertEqual(i18n.format_age(0.42, "zh"), "0.4 秒前")
         self.assertEqual(i18n.format_age(65.0, "zh"), "1 分 5 秒前")
         self.assertEqual(i18n.format_age(0.42, "en"), "0.4 s ago")

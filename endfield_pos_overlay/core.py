@@ -112,8 +112,8 @@ def ordered_triple(pos: Position, order: str) -> tuple[float, float, float]:
 
 
 def format_coords(triple: tuple[float, float, float]) -> str:
-    """Clipboard format: space separated, two decimals."""
-    return " ".join(f"{v:.2f}" for v in triple)
+    """Clipboard format: comma + space separated, two decimals (e.g. "-314.00, 323.00, 400.00")."""
+    return ", ".join(f"{v:.2f}" for v in triple)
 
 
 # ============================================================================ shared state
